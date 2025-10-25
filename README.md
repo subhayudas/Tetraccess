@@ -1,4 +1,4 @@
-# TetrAccess - Google OAuth 2.0 Authentication
+# Master's Union - Google OAuth 2.0 Authentication
 
 A modern web application that implements Google OAuth 2.0 authentication and stores user credentials securely in Supabase.
 
