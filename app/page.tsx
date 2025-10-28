@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Sparkles } from 'lucide-react'
 
 export default function Home() {
   const router = useRouter()
@@ -29,38 +30,65 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="flex min-h-screen items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          {/* Logo/Brand */}
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+    <div className="min-h-screen flex items-center justify-center overflow-hidden p-4 bg-gradient-to-br from-gray-50 to-white">
+      <div className="w-full relative max-w-5xl overflow-hidden flex flex-col md:flex-row shadow-2xl rounded-3xl">
+        {/* Animated gradient bars - reference only, not shown */}
+        <div className="hidden md:flex absolute z-[2] overflow-hidden backdrop-blur-2xl opacity-30">
+          <div className="h-[40rem] w-[4rem] bg-gradient-to-r from-transparent via-black to-transparent"></div>
+          <div className="h-[40rem] w-[4rem] bg-gradient-to-r from-transparent via-black to-transparent"></div>
+          <div className="h-[40rem] w-[4rem] bg-gradient-to-r from-transparent via-black to-transparent"></div>
+          <div className="h-[40rem] w-[4rem] bg-gradient-to-r from-transparent via-black to-transparent"></div>
+          <div className="h-[40rem] w-[4rem] bg-gradient-to-r from-transparent via-black to-transparent"></div>
+          <div className="h-[40rem] w-[4rem] bg-gradient-to-r from-transparent via-black to-transparent"></div>
+        </div>
+
+        {/* Decorative circles */}
+        <div className="w-[15rem] h-[15rem] bg-orange-500 absolute z-[1] rounded-full bottom-0 left-0 opacity-20 animate-pulse"></div>
+        <div className="w-[12rem] h-[12rem] bg-white absolute z-[1] rounded-full bottom-0 left-10 opacity-5"></div>
+        <div className="w-[10rem] h-[10rem] bg-white absolute z-[1] rounded-full bottom-10 left-20 opacity-5"></div>
+
+        {/* Left panel - Brand */}
+        <div className="bg-black text-white p-8 md:p-12 md:w-1/2 relative rounded-t-3xl md:rounded-tr-none md:rounded-bl-3xl overflow-hidden">
+          <div className="w-full h-full absolute top-0 left-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+          <div className="relative z-10 h-full flex flex-col justify-center">
+            <h1 className="text-3xl md:text-4xl font-medium leading-tight tracking-tight mb-4">
               Master's Union
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Secure OAuth 2.0 Authentication
+            <p className="text-gray-300 text-lg leading-relaxed">
+              Design and dev partner for startups and founders.
+            </p>
+          </div>
+        </div>
+
+        {/* Right panel - Login */}
+        <div className="p-8 md:p-12 md:w-1/2 flex flex-col bg-white z-10 rounded-b-3xl md:rounded-bl-none md:rounded-br-3xl">
+          <div className="flex flex-col items-left mb-8">
+            <div className="text-orange-500 mb-4 animate-pulse">
+              <Sparkles className="h-10 w-10" />
+            </div>
+            <h2 className="text-3xl font-medium mb-2 tracking-tight text-gray-900">
+              Get Started
+            </h2>
+            <p className="text-left text-gray-600">
+              Welcome to Master's Union — Let's get started
             </p>
           </div>
 
-          {/* Login Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
-              Welcome Back
-            </h2>
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm text-center">
+                {error}
+              </p>
+            </div>
+          )}
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-red-600 dark:text-red-400 text-sm text-center">
-                  {error}
-                </p>
-              </div>
-            )}
-
+          <form className="flex flex-col gap-4">
             <button
+              type="button"
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-600 rounded-lg px-6 py-3 font-medium hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+              className="w-full flex items-center justify-center gap-3 bg-white text-gray-700 border-2 border-gray-300 rounded-lg px-6 py-3 font-medium hover:bg-gray-50 hover:border-orange-500 transition-all duration-200 shadow-sm hover:shadow-md group"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -80,25 +108,20 @@ export default function Home() {
               </svg>
               Continue with Google
             </button>
+          </form>
 
-            <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-              Sign in securely using your Google account
-            </p>
-          </div>
-
-          {/* Features */}
-          <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl mb-1">🔒</div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Secure</p>
+          <div className="mt-8 space-y-3">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-orange-500 font-bold">✓</span>
+              <span>Secure and encrypted</span>
             </div>
-            <div>
-              <div className="text-2xl mb-1">⚡</div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Fast</p>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-orange-500 font-bold">✓</span>
+              <span>One-click authentication</span>
             </div>
-            <div>
-              <div className="text-2xl mb-1">✨</div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Simple</p>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-orange-500 font-bold">✓</span>
+              <span>No password required</span>
             </div>
           </div>
         </div>
