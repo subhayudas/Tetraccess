@@ -14,10 +14,28 @@ export interface GoogleUserInfo {
   verified_email: boolean
 }
 
+export function getBaseUrl() {
+  // Use NEXTAUTH_URL if set
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL
+  }
+  
+  // For Vercel production
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  
+  // Default fallback
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://masterunion.vercel.app'
+    : 'http://localhost:3000'
+}
+
 export function getGoogleAuthUrl() {
+  const baseUrl = getBaseUrl()
   const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
   const options = {
-    redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/google`,
+    redirect_uri: `${baseUrl}/api/auth/callback/google`,
     client_id: process.env.GOOGLE_CLIENT_ID!,
     access_type: 'offline',
     response_type: 'code',
@@ -33,12 +51,13 @@ export function getGoogleAuthUrl() {
 }
 
 export async function getGoogleTokens(code: string): Promise<GoogleTokenResponse> {
+  const baseUrl = getBaseUrl()
   const url = 'https://oauth2.googleapis.com/token'
   const values = {
     code,
     client_id: process.env.GOOGLE_CLIENT_ID!,
     client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-    redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/google`,
+    redirect_uri: `${baseUrl}/api/auth/callback/google`,
     grant_type: 'authorization_code',
   }
 

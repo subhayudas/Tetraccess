@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getGoogleTokens, getGoogleUser } from '@/lib/google-auth'
+import { getGoogleTokens, getGoogleUser, getBaseUrl } from '@/lib/google-auth'
 import { saveUserCredentials } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get('code')
   const error = searchParams.get('error')
+  const baseUrl = getBaseUrl()
 
   if (error) {
-    return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/?error=${error}`)
+    return NextResponse.redirect(`${baseUrl}/?error=${error}`)
   }
 
   if (!code) {
-    return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/?error=no_code`)
+    return NextResponse.redirect(`${baseUrl}/?error=no_code`)
   }
 
   try {
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
     console.log('✅ Successfully saved credentials to Supabase for:', userInfo.email)
 
     // Create session cookie
-    const response = NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard`)
+    const response = NextResponse.redirect(`${baseUrl}/dashboard`)
     
     // Store user session
     response.cookies.set('user_email', userInfo.email, {
@@ -60,8 +61,9 @@ export async function GET(request: NextRequest) {
     return response
   } catch (error) {
     console.error('OAuth error:', error)
+    const baseUrl = getBaseUrl()
     return NextResponse.redirect(
-      `${process.env.NEXTAUTH_URL}/?error=authentication_failed`
+      `${baseUrl}/?error=authentication_failed`
     )
   }
 }
