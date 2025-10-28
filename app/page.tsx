@@ -54,9 +54,7 @@ export default function Home() {
             <h1 className="text-3xl md:text-4xl font-medium leading-tight tracking-tight mb-4">
               Master's Union
             </h1>
-            <p className="text-gray-300 text-lg leading-relaxed">
-              Hirebuddy
-            </p>
+            
           </div>
         </div>
 
