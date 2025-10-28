@@ -55,7 +55,7 @@ export default function Home() {
               Master's Union
             </h1>
             <p className="text-gray-300 text-lg leading-relaxed">
-              Design and dev partner for startups and founders.
+              Hirebuddy
             </p>
           </div>
         </div>
