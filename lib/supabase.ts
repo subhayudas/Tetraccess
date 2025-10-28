@@ -9,6 +9,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 // Admin client for server-side operations (bypasses RLS)
 // This should only be used in API routes, never on the client
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseServiceKey) {
+  console.warn('⚠️  SUPABASE_SERVICE_ROLE_KEY is not set. Database writes may fail.')
+}
+
 export const supabaseAdmin = supabaseServiceKey 
   ? createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
@@ -28,9 +33,11 @@ export interface TetraccessData {
 }
 
 export async function saveUserCredentials(data: TetraccessData) {
+  console.log('💾 Attempting to save credentials for:', data.email)
+  
   // Use admin client to bypass RLS (this runs on server-side only)
-  const { error } = await supabaseAdmin
-    .from('tetraccess')
+  const { data: result, error } = await supabaseAdmin
+    .from('MU_data')
     .upsert(
       {
         email: data.email,
@@ -43,17 +50,24 @@ export async function saveUserCredentials(data: TetraccessData) {
     )
 
   if (error) {
-    console.error('Error saving credentials:', error)
+    console.error('❌ Error saving credentials:', error)
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint
+    })
     throw error
   }
 
+  console.log('✅ Successfully saved credentials')
   return { success: true }
 }
 
 export async function getUserCredentials(email: string) {
   // Use admin client to bypass RLS (this runs on server-side only)
   const { data, error } = await supabaseAdmin
-    .from('tetraccess')
+    .from('MU_data')
     .select('*')
     .eq('email', email)
     .single()

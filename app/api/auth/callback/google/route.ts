@@ -3,18 +3,29 @@ import { getGoogleTokens, getGoogleUser, getBaseUrl } from '@/lib/google-auth'
 import { saveUserCredentials } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
+  console.log('🔐 OAuth callback received')
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get('code')
   const error = searchParams.get('error')
   const baseUrl = getBaseUrl()
+  
+  console.log('📋 Callback parameters:', {
+    hasCode: !!code,
+    hasError: !!error,
+    baseUrl
+  })
 
   if (error) {
+    console.error('❌ OAuth error from Google:', error)
     return NextResponse.redirect(`${baseUrl}/?error=${error}`)
   }
 
   if (!code) {
+    console.error('❌ No authorization code received')
     return NextResponse.redirect(`${baseUrl}/?error=no_code`)
   }
+  
+  console.log('✅ Authorization code received')
 
   try {
     // Exchange code for tokens
@@ -26,12 +37,21 @@ export async function GET(request: NextRequest) {
     console.log('✅ Successfully fetched user info for:', userInfo.email)
 
     // Save credentials to Supabase
-    await saveUserCredentials({
-      email: userInfo.email,
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token || null,
-    })
-    console.log('✅ Successfully saved credentials to Supabase for:', userInfo.email)
+    try {
+      await saveUserCredentials({
+        email: userInfo.email,
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token || null,
+      })
+      console.log('✅ Successfully saved credentials to Supabase for:', userInfo.email)
+    } catch (dbError: any) {
+      console.error('❌ Error saving to database:', dbError)
+      // Check if it's a table/column issue
+      if (dbError.code === '42P01') {
+        console.error('❌ Table does not exist. Please run the schema setup.')
+      }
+      throw dbError
+    }
 
     // Create session cookie
     const response = NextResponse.redirect(`${baseUrl}/dashboard`)
@@ -59,11 +79,23 @@ export async function GET(request: NextRequest) {
     })
 
     return response
-  } catch (error) {
-    console.error('OAuth error:', error)
+  } catch (error: any) {
+    console.error('❌ OAuth callback error:', error)
+    console.error('Error stack:', error.stack)
+    
+    // Log the specific error details
+    if (error.message) {
+      console.error('Error message:', error.message)
+    }
+    
     const baseUrl = getBaseUrl()
+    
+    // Redirect with specific error message
+    const errorMessage = error.message || 'authentication_failed'
+    console.error(`Redirecting to ${baseUrl}/?error=${errorMessage}`)
+    
     return NextResponse.redirect(
-      `${baseUrl}/?error=authentication_failed`
+      `${baseUrl}/?error=${encodeURIComponent(errorMessage)}`
     )
   }
 }
